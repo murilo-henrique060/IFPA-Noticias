@@ -36,7 +36,14 @@ def getMessage():
         item_link = str(item.find('a').get('href'))
         item = str(item)
 
-        message += item.replace(item_link, f'{"https://belem.ifpa.edu.br"}{item_link}')
+        try:
+            item_image = str(item.find('img').get('src'))
+
+        except:
+            message += item.replace(item_link, f'{"https://belem.ifpa.edu.br"}{item_link}')
+
+        else:
+            message += item.replace(item_link, f'{"https://belem.ifpa.edu.br"}{item_link}').replace(item_image, f'{"https://belem.ifpa.edu.br"}{item_image}')
 
     message_html = f'<html><body>{message}</body></html>'
 
@@ -79,6 +86,7 @@ def main():
 
         if tm.hour >= alarm_hour and tm.minute >= alarm_minute:
             sendEmail(getMessage())
+            print('Email enviado')
             break
 
         else:
