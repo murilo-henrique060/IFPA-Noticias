@@ -84,5 +84,8 @@ def main():
         else:
             sleep(60)
 
+    while True:
+        pass
+
 if __name__ == '__main__':
     main()
