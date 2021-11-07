@@ -34,16 +34,17 @@ def getMessage():
 
     for item in itens:
         item_link = str(item.find('a').get('href'))
-        item = str(item)
 
         try:
-            item_image = str(item.find('img').get('src'))
+            item_img = str(item.find('div', class_='tileImage'))
 
         except:
-            message += item.replace(item_link, f'{"https://belem.ifpa.edu.br"}{item_link}')
+            pass
 
         else:
-            message += item.replace(item_link, f'{"https://belem.ifpa.edu.br"}{item_link}').replace(item_image, f'{"https://belem.ifpa.edu.br"}{item_image}')
+            message += str(item).replace(item_img, '')
+
+        message += str(item).replace(item_link, f'{"https://belem.ifpa.edu.br"}{item_link}')
 
     message_html = f'<html><body>{message}</body></html>'
 
