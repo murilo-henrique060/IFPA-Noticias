@@ -62,7 +62,7 @@ def sendEmail(message_html):
 
     email_msg.attach(MIMEText(message_html, 'html'))
 
-    server.sendmail(email_msg['From'], email_msg['To'], email_msg.as_string())
+    server.sendmail(email_msg['From'], to.split(', '), email_msg.as_string())
 
     server.quit()
 
