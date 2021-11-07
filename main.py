@@ -30,3 +30,6 @@ soup = BeautifulSoup(page.text, 'html.parser')
 itens = soup.find_all('div', class_='tileItem')
 
 print(itens)
+
+while True:
+    pass
