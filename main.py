@@ -42,7 +42,7 @@ def getMessage():
             pass
 
         else:
-            message += str(item).replace(item_img, '')
+            item = str(item).replace(item_img, '')
 
         message += str(item).replace(item_link, f'{"https://belem.ifpa.edu.br"}{item_link}')
 
