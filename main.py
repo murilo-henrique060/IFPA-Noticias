@@ -1,35 +1,46 @@
-import requests
-import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from decouple import config
-from bs4 import BeautifulSoup
 
-url = config('url')
-username = config('user_name')
-apiKey = config('apiKey')
+host = config('host')
+port = config('port', cast=int)
+user = config('user')
+password = config('password')
+to = config('to')
+title = config('title')
 
-apiEndPoint = config('apiEndPoint')
+message_html = """
+<html>
+<body>
+    <div class="span10 tileContent">
+		<span class="subtitle"></span>
+			<h2 class="tileHeadline">
+	           	<a href="/publicacoes/1290-ifpa-campus-belem-abre-selecao-para-especializacao-em-linguagens-e-artes-na-formacao-docente">IFPA Campus Belém abre seleção para Especialização em Linguagens e Artes na Formação Docente</a>
+	        </h2>
+	        	<span class="description">
+	        		<p>O Instituto Federal de Educação, Ciência e Tecnologia do Pará - IFPA Campus Belém, por meio do Curso de Linguagens e Artes na Formação Docente, torna público o Edital nº...</p>
+                </span>
+  	</div>
+</body>
+</html>
+"""
 
-options = {
-    'useChrome': config('useChrome', cast=bool),
-    'premiumProxy': config('premiumProxy', cast=bool),
-    'proxyCountry': config('proxyCountry'),
-    'waitForNetworkRequests': config('waitForNetworkRequests', cast=bool),
-}
+server = smtplib.SMTP(host, port)
+server.ehlo()
+server.starttls()
+server.login(user, password)
 
-payload = json.dumps({"url":url,"options":options})
-headers = {
-    'Content-Type': "application/json"
-}
+email_msg = MIMEMultipart()
+email_msg['From'] = user
+email_msg['To'] = to
+email_msg['Subject'] = title
 
-page = requests.request("POST", apiEndPoint, data=payload, auth=(username,apiKey), headers=headers)
+email_msg.attach(MIMEText(message_html, 'html'))
 
-print(page.text)
+server.sendmail(email_msg['From'], email_msg['To'], email_msg.as_string())
 
-soup = BeautifulSoup(page.text, 'html.parser')
-
-itens = soup.find_all('div', class_='tileItem')
-
-print(itens)
+server.quit()
 
 while True:
     pass
