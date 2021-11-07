@@ -1,46 +1,88 @@
-import smtplib
+import json, smtplib, requests, datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from decouple import config
+from bs4 import BeautifulSoup
+from time import sleep
 
-host = config('host')
-port = config('port', cast=int)
-user = config('user')
-password = config('password')
-to = config('to')
-title = config('title')
+def getMessage():
+    url = config('url')
+    username = config('user_name')
+    apiKey = config('apiKey')
 
-message_html = """
-<html>
-<body>
-    <div class="span10 tileContent">
-		<span class="subtitle"></span>
-			<h2 class="tileHeadline">
-	           	<a href="/publicacoes/1290-ifpa-campus-belem-abre-selecao-para-especializacao-em-linguagens-e-artes-na-formacao-docente">IFPA Campus Belém abre seleção para Especialização em Linguagens e Artes na Formação Docente</a>
-	        </h2>
-	        	<span class="description">
-	        		<p>O Instituto Federal de Educação, Ciência e Tecnologia do Pará - IFPA Campus Belém, por meio do Curso de Linguagens e Artes na Formação Docente, torna público o Edital nº...</p>
-                </span>
-  	</div>
-</body>
-</html>
-"""
+    apiEndPoint = config('apiEndPoint')
 
-server = smtplib.SMTP(host, port)
-server.ehlo()
-server.starttls()
-server.login(user, password)
+    options = {
+        'useChrome': config('useChrome', cast=bool),
+        'premiumProxy': config('premiumProxy', cast=bool),
+        'proxyCountry': config('proxyCountry'),
+        'waitForNetworkRequests': config('waitForNetworkRequests', cast=bool),
+    }
 
-email_msg = MIMEMultipart()
-email_msg['From'] = user
-email_msg['To'] = to
-email_msg['Subject'] = title
+    payload = json.dumps({"url":url,"options":options})
+    headers = {
+        'Content-Type': "application/json"
+    }
 
-email_msg.attach(MIMEText(message_html, 'html'))
+    page = requests.request("POST", apiEndPoint, data=payload, auth=(username,apiKey), headers=headers)
 
-server.sendmail(email_msg['From'], email_msg['To'], email_msg.as_string())
+    soup = BeautifulSoup(page.text, 'html5lib')
 
-server.quit()
+    itens = soup.find_all('div', class_='span10 tileContent')
 
-while True:
-    pass
+    message = ''
+
+    for item in itens:
+        item_link = str(item.find('a').get('href'))
+        item = str(item)
+
+        message += item.replace(item_link, f'{"https://belem.ifpa.edu.br"}{item_link}')
+
+    message_html = f'<html><body>{message}</body></html>'
+
+    return message_html
+
+def sendEmail(message_html):
+    host = config('host')
+    port = config('port', cast=int)
+    user = config('user')
+    password = config('password')
+    to = config('to')
+    title = config('title')
+
+    server = smtplib.SMTP(host, port)
+    server.ehlo()
+    server.starttls()
+    server.login(user, password)
+
+    email_msg = MIMEMultipart()
+    email_msg['From'] = user
+    email_msg['To'] = to
+    email_msg['Subject'] = title
+
+    email_msg.attach(MIMEText(message_html, 'html'))
+
+    server.sendmail(email_msg['From'], email_msg['To'], email_msg.as_string())
+
+    server.quit()
+
+def main():
+    alarm_hour = config('alarm_hour', cast=int)
+    alarm_minute = config('alarm_minute', cast=int)
+
+    while True:
+        td = datetime.timedelta(hours=-3)
+        tz = datetime.timezone(td)
+        tm = datetime.datetime.now(tz)
+
+        print(tm.strftime('Horário de Brasília - %H:%M'))
+
+        if tm.hour >= alarm_hour and tm.minute >= alarm_minute:
+            sendEmail(getMessage())
+            break
+
+        else:
+            sleep(60)
+
+if __name__ == '__main__':
+    main()
