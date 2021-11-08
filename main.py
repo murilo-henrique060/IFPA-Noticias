@@ -85,16 +85,12 @@ def main():
 
         print(tm.strftime('Horário de Brasília - %H:%M'))
 
-        if tm.hour >= alarm_hour and tm.minute >= alarm_minute:
+        if tm.hour == alarm_hour and tm.minute == alarm_minute:
             sendEmail(getMessage())
             print('Email enviado')
             break
 
-        else:
-            sleep(60)
-
-    while True:
-        pass
+        sleep(60)
 
 if __name__ == '__main__':
     main()
