@@ -88,7 +88,6 @@ def main():
         if tm.hour == alarm_hour and tm.minute == alarm_minute:
             sendEmail(getMessage())
             print('Email enviado')
-            break
 
         sleep(60)
 
