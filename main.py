@@ -76,20 +76,19 @@ def sendEmail(message_html):
 
 def main():
     alarm_hour = config('alarm_hour', cast=int)
-    alarm_minute = config('alarm_minute', cast=int)
+    td = datetime.timedelta(hours = -3)
+    tz = datetime.timezone(td)
 
     while True:
-        td = datetime.timedelta(hours=-3)
-        tz = datetime.timezone(td)
         tm = datetime.datetime.now(tz)
 
-        print(tm.strftime('Horário de Brasília - %H:%M'))
+        print(tm.strftime('Hora atual - %H'))
 
-        if tm.hour == alarm_hour and tm.minute == alarm_minute:
+        if tm.hour == alarm_hour:
             sendEmail(getMessage())
             print('Email enviado')
 
-        sleep(60)
+        sleep(3600)
 
 if __name__ == '__main__':
     main()
