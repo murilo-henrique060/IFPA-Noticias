@@ -2,16 +2,15 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "..\\Python Workspaces\\xp-calculator-discord-bot"
-		},
-		{
-			"path": "..\\IFPA Notícias\\IFPA-Noticias"
-		},
-		{
-			"path": "..\\web scraping"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"search.useGlobalIgnoreFiles": true,
+		"files.autoSave": "onFocusChange",
+		"files.exclude": {
+			"**/.git": false,
+			"**/.svn": false
+		},
+		"remoteHub.experimental.prefetch": false
+	}
 }

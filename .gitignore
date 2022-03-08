@@ -1,14 +1,8 @@
-# Tests Files
-tests/
-
-# Vs Code Workspace
-*.code-workspace
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.code-workspace
 # C extensions
 *.so
 
