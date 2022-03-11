@@ -5,8 +5,16 @@ from decouple import config
 from bs4 import BeautifulSoup
 from time import sleep
 
-def getMessage():
-    url = config('url')
+def urllibScraping(url: str): # using urllib to scrap when is running localy
+    from urllib.request import urlopen
+    from bs4 import BeautifulSoup
+
+    html = urlopen(url)
+    soup = BeautifulSoup(html, 'html.parser')
+
+    return soup
+
+def apiScraping(url: str): # using api to scrap when is running on server. api: scrapping-bot.io
     username = config('user_name')
     apiKey = config('apiKey')
 
@@ -27,6 +35,24 @@ def getMessage():
     page = requests.request("POST", apiEndPoint, data=payload, auth=(username,apiKey), headers=headers)
 
     soup = BeautifulSoup(page.text, 'html5lib')
+
+    return soup
+
+def scrapUrl(url: str, find_tag, find_class):
+    soup = urllibScraping(url) if config('scraping_type') == 'urllib' else apiScraping(url)
+
+    itens = soup.find_all(find_tag, class_=find_class)
+    for item in itens:
+        item_link = str(item.find('a').get('href'))
+
+        for item_img in item.find_all('div', class_='tileImage'):
+            item = str(item).replace(str(item_img), '')
+
+    return soup.find(find_tag, class_=find_class)
+
+def genMessage():
+    url = config('url')
+    soup = urllibScraping(url) if config('scraping_type') == 'urllib' else apiScraping(url)
 
     itens = soup.find_all('div', class_='span10 tileContent')
 
@@ -86,7 +112,7 @@ def main():
         print(tm.strftime('Hora atual - %H:%M'))
 
         if tm.hour == alarm_hour and tm.minute == alarm_minute:
-            sendEmail(getMessage())
+            sendEmail(genMessage())
             print('Email enviado')
 
         sleep(60)

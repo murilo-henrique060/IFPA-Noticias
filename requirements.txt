@@ -1,4 +1,5 @@
 python-decouple
 requests
 BeautifulSoup4
+urllib
 html5lib
