@@ -52,7 +52,7 @@ def scrapUrl(url: str, find_tag, find_class):
 
 def genMessage():
     url = config('url')
-    soup = urllibScraping(url) if config('scraping_type') == 'urllib' else apiScraping(url)
+    soup = urllibScraping(url) if config('dev_mode') == 'urllib' else apiScraping(url)
 
     itens = soup.find_all('div', class_='span10 tileContent')
 
