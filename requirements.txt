@@ -3,3 +3,4 @@ requests
 BeautifulSoup4
 urllib3
 html5lib
+psycopg2-binary
